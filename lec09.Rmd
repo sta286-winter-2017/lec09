@@ -48,7 +48,7 @@ print(xtable(addmargins(gas_joint, FUN=list(Marginal=sum), quiet=TRUE), digits=3
 
 \pause What are the probabilities of $X$ taking on any of its three possible values *given $Y=2$, say.*
 
-\pause $$P(X=1 | Y=2) = frac{P(X=1, Y=2)}{P(Y=2)} = \frac{`r gas_joint[3,1]`}{`r sum(gas_joint[3,])`}$$
+\pause $$P(X=1 | Y=2) = \frac{P(X=1, Y=2)}{P(Y=2)} = \frac{`r gas_joint[3,1]`}{`r sum(gas_joint[3,])`}$$
 
 \pause $$P(X=1.5 | Y=2) = \frac{`r gas_joint[3,2]`}{`r sum(gas_joint[3,])`} \qquad \qquad P(X=1.75 | Y=2) = \frac{`r gas_joint[3,3]`}{`r sum(gas_joint[3,])`} $$
 
@@ -84,10 +84,10 @@ $$f(x,y) = \begin{cases}
 2 &: 0 < x < 1,\ 0 < y < 1,\ x + y < 1\\
 0 &: \text{otherwise}
 \end{cases}$$
-The marginal density for $X$ was found to be $\f{X}(x) = 2x$ for $0 < x < 1$.
+The marginal density for $X$ was found to be $\f{X}(x) = 2(1-x)$ for $0 < x < 1$.
 
 \pause The conditional density of $Y$ given $X=0.5$ will be 0 when $y$ is outside $(0, 0.5)$. Otherwise it will be:
-$$f(y|x=0.5) = \frac{2}{2\cdot 0.5} = 2$$
+$$f(y|x=0.5) = \frac{2}{2\cdot (1-0.5)} = 2$$
 
 \pause Unlike marginal densities, conditional densities can sometimes be visualized. They are just "slices" of the joint density.
 
@@ -139,8 +139,8 @@ Marginal & 0.345 & 0.320 & 0.335 & 1.000 \\
 
 For an event $A$ from a sample space $S$, define the *indicator random variable*:
 $$I_A(\omega) = \begin{cases}
-1 &: \omega \in S\\
-0 &: \omega \not\in S
+1 &: \omega \in A\\
+0 &: \omega \not\in A
 \end{cases}$$
 
 This is the general "Bernoulli trial" and one of the most important random variables there is.
