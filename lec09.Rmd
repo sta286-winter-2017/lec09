@@ -1,0 +1,252 @@
+---
+title: "STA286 Lecture 09"
+author: "Neil Montgomery"
+date: "Last edited: `r format(Sys.time(), '%Y-%m-%d %H:%M')`"
+output: 
+  beamer_presentation:
+    keep_tex: TRUE
+    incremental: TRUE
+    df_print: tibble
+    fig_caption: FALSE
+classoption: aspectratio=169
+header-includes:
+- \renewcommand{\le}{\leqslant}
+- \renewcommand{\ge}{\geqslant}
+- \renewcommand\P[1]{P{\left(#1\right)}}
+- \newcommand\F[1]{F_{\tiny{#1}}}
+- \newcommand\f[1]{f_{\tiny{#1}}}
+- \newcommand\p[1]{p_{\tiny{#1}}}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message=FALSE)
+options(tibble.width=70)
+library(tidyverse)
+library(xtable)
+diams <- c("1", "1.5", "1.75")
+psi <- c("0.5", "1", "2")
+Counts <- c(75, 100, 150, 110, 80, 90, 160, 140, 95)
+gas <- data.frame(expand.grid(Diameter=diams, Pressure=psi), Counts=Counts,
+                  check.names = FALSE)
+gas_joint <- prop.table(xtabs(Counts ~ Pressure + Diameter, gas))
+
+addtorow_m <- list()
+addtorow_m$pos <- list(0, 0)
+addtorow_m$command <- c("& \\multicolumn{3}{c|}{$X$} & \\\\\n",
+"$Y$ & 1 & 1.5 & 1.75 & Marginal\\\\\n")
+
+```
+
+## conditional distributions
+
+Consider again the gas pipe joint (and marginal) distributions:
+```{r, results='asis'}
+print(xtable(addmargins(gas_joint, FUN=list(Marginal=sum), quiet=TRUE), digits=3,
+             align="r|rrr|r"), add.to.row=addtorow_m, comment=FALSE,
+      include.colnames = FALSE, hline.after = c(0,3))
+```
+
+\pause What are the probabilities of $X$ taking on any of its three possible values *given $Y=2$, say.*
+
+\pause $$P(X=1 | Y=2) = frac{P(X=1, Y=2)}{P(Y=2)} = \frac{`r gas_joint[3,1]`}{`r sum(gas_joint[3,])`}$$
+
+\pause $$P(X=1.5 | Y=2) = \frac{`r gas_joint[3,2]`}{`r sum(gas_joint[3,])`} \qquad \qquad P(X=1.75 | Y=2) = \frac{`r gas_joint[3,3]`}{`r sum(gas_joint[3,])`} $$
+
+## conditional pmf and conditional density
+
+Given the joint pmf $p(x,y)$ for $X$ and $Y$, the conditional pmf for $X$ given $Y=y$ is:
+$$p(x|y) = \frac{p(x,y)}{\p{Y}(y)},$$
+provided $P(Y=y) > 0.$
+
+\pause Given the joint density $f(x,y)$ for $X$ and $Y$, the conditional density for $X$ given $Y=y$ is:
+$$f(x|y) = \frac{f(x,y)}{\f{Y}(y)},$$
+provided $\f{Y}(y) > 0.$
+
+## conditional density example
+
+Reconsider the two electronic components example:
+$$f(x,y) \begin{cases}2e^{-x-2y} &: x > 0, y > 0\\
+0 &: \text{otherwise}\end{cases}$$
+The marginal density for $Y$ is $2e^{-2y}$ on $y > 0$. 
+
+\pause The conditional density for $X$ given $Y = 2$ is:
+
+\pause $$e^{-x} \text{ on } x > 0$$
+
+\pause Heck, the conditional density for $X$ given $Y$ equals anything greater than 0 is still always $e^{-x}$ on $x > 0.$ 
+
+\pause That's because $X$ and $Y$ have a special relationship\ldots to be revisited.
+
+## conditional density example "uniform on a triangle"
+
+Consider again $X$ and $Y$ with the following density. 
+$$f(x,y) = \begin{cases}
+2 &: 0 < x < 1,\ 0 < y < 1,\ x + y < 1\\
+0 &: \text{otherwise}
+\end{cases}$$
+The marginal density for $X$ was found to be $\f{X}(x) = 2x$ for $0 < x < 1$.
+
+\pause The conditional density of $Y$ given $X=0.5$ will be 0 when $y$ is outside $(0, 0.5)$. Otherwise it will be:
+$$f(y|x=0.5) = \frac{2}{2\cdot 0.5} = 2$$
+
+\pause Unlike marginal densities, conditional densities can sometimes be visualized. They are just "slices" of the joint density.
+
+## independence
+
+In the "two electronic component" example, the conditional density for $X$ given $Y=y$ (no matter what $y > 0$) never changes:
+$$f(x|y)=f(x)$$
+Knowledge of the outcome of $Y$ doesn't tell you anything about the distribution of $X$.
+
+\pause In the "uniform on a triangle" example, the conditional density for $Y$ given $X=x$ is always going to be (for $0<x<1$):
+$$f(y|x) = \frac{2}{2x} = \frac{1}{x}$$
+for $0 < y < x$ and 0 otherwise. So knowledge of the outcome of $X$ tells something about the distribution of $Y$.
+
+## independence
+
+In the gas pipes pmf:
+
+```{r, results='asis'}
+print(xtable(addmargins(gas_joint, FUN=list(Marginal=sum), quiet=TRUE), digits=3,
+             align="r|rrr|r"), add.to.row=addtorow_m, comment=FALSE,
+      include.colnames = FALSE, hline.after = c(0,3))
+```
+
+the conditional distributions for $X$ given $Y=y$ are all different (as well as those for $Y$ given $X=x$.)
+
+\pause \textbf{Definition:} $X$ and $Y$ are *independent* (or $X \perp Y$) if:
+$$p(x,y) = \p{X}(x)\p{Y}(y) \qquad \text{(discrete)} \qquad \qquad
+f(x,y) = \f{X}(x)\f{Y}(y) \qquad \text{(continuous)}$$
+
+## gas pipe diameters and pressures "made" independent
+
+Suppose the marginal distributions are the same. What would the joint pmf have to be?
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{r|ccc|r}
+   & \multicolumn{3}{c|}{$X$} & \\
+ $Y$ & 1 & 1.5 & 1.75 & Marginal\\
+ \hline
+0.5 & \onslide<2->{$0.345\cdot 0.325$} &  &  & 0.325 \\ 
+  1 &  &  & \onslide<4->{$0.335\cdot 0.280$} & 0.280 \\ 
+  2 & & \onslide<3->{$0.320\cdot 0.395$} &  & 0.395 \\ 
+   \hline
+Marginal & 0.345 & 0.320 & 0.335 & 1.000 \\ 
+  \end{tabular}
+\end{table}
+
+## relationship with independence of events
+
+For an event $A$ from a sample space $S$, define the *indicator random variable*:
+$$I_A(\omega) = \begin{cases}
+1 &: \omega \in S\\
+0 &: \omega \not\in S
+\end{cases}$$
+
+This is the general "Bernoulli trial" and one of the most important random variables there is.
+
+## relationship with independence of events
+
+\pause Suppose $A$ and $B$ are events in $S$. Consider the joint pmf for $A$ and $B$:
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{c|cc|c}
+   & \multicolumn{2}{c|}{$I_A$} & \\
+ $I_B$ & 0 & 1 & Marginal\\
+ \hline
+  0 & \onslide<7->{$P(A^\prime \cap B^\prime)$} & \onslide<6->{$P(A\cap B^\prime)$} & \onslide<4->{$P(B^\prime)$}\\ 
+  1 & \onslide<8->{$P(A^\prime \cap B)$} & \onslide<5->{$P(A\cap B)$} & \onslide<3->{$P(B)$}\\ 
+   \hline
+Marginal &\onslide<4->{$P(A^\prime)$} & \onslide<3->{$P(A)$} &  \\ 
+  \end{tabular}
+\end{table}
+
+\pause \pause \pause \pause \pause \pause \pause Now suppose $A \perp B$. Recall that this is actually a "strong" statement equivalent to $A \perp B^\prime$ and $A^\prime \perp B^\prime$ and $A^\prime \perp B$.
+
+\pause So it is also equivalent to the independence of the random variables $I_A$ and $I_B$.
+
+\pause The formal definition of independence is:
+$$P(X \in C, Y \in D) = P(X \in C)P(Y \in D)$$
+for any $C, D \subset \mathbb{R}$.
+
+## notes on verifying independence
+
+First of all, in practice independence continues to be someone one generally *assumes*.
+
+\pause But one still needs to know how to verify independence, which is easy for continuous $X$ and $Y$:
+
+* the joint density factors:
+$$f(x,y) = g(x)h(y)$$
+
+* and the non-zero region of $f$ is a "rectangle"
+
+\pause Examples:
+
+* $f(x,y) = x + y$ on $0 < x,y < 1$ and 0 otherwise.
+
+* $f(x,y) = 24xy$ on $x>0, y>0, 0 < x + y < 1$ and 0 otherwise.
+
+# the spanish inquisition
+
+## expected value
+
+Recall the sample average:
+$$\overline x = \sum\limits_{i=1}^n x_i\cdot\frac{1}{n}$$
+which can be considered as a weighted sum with weights $w_i = 1/n$.
+
+\pause A (discrete) random variable can have an "average", which is a weighted sum of the outcomes with their probabilities as weights. 
+
+\pause BIG MONEY. We play a gambling game called BIG MONEY. Roll a die. This is your outcome after each play of BIG MONEY:
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{rcccc}
+ \hline
+ Roll & 1, 2 & 3 & 4, 5 & 6 \\\hline
+Outcome \$ & -2 & 0 & 1 & 2 \\\hline
+\onslide<4->{Probability & 2/6 & 1/6 & 2/6 & 1/6\\\hline}
+\end{tabular}
+\end{table}
+
+## BIG MONEY is a "fair game"
+
+Your *expected* winnings are (theoretically):
+$$-2\frac{2}{6} + 0 \frac{1}{6} + 1\frac{2}{6} + 2\frac{1}{6} = 0$$
+
+\pause The *expected value* of a discrete random variable $X$ is:
+$$E(X) = \sum\limits_x xp(x)$$
+if the sum exists (actually it has to converge absolutely.)
+
+## expected number of coin tosses to first `H`
+
+Denote by $X$ the number of coin tosses until the first `H`. The pmf is:
+$$p(x) = \left(1-\frac{1}{2}\right)^{x-1}\frac{1}{2}$$
+for $x \in \{1,2,3,\ldots\}$. For a moment replace $\frac{1}{2}$ with $p$.
+
+\begin{align*}
+\onslide<2->{E(X) &= \sum\limits_{x=1}^\infty x(1-p)^{x-1}p \\}
+\onslide<3->{ &= p\sum\limits_{x=0}^\infty x(1-p)^{x-1}\\}
+\onslide<4->{ &= p\sum\limits_{x=0}^\infty \frac{d}{dp} (1-p)^{x}\\}
+\onslide<5->{ &= p\frac{d}{dp}\left(\sum\limits_{x=0}^\infty  (1-p)^{x}\right)
+=p\frac{d}{dp}\left(\frac{1}{1-(1-p)}\right) = \frac{1}{p}\\}
+\end{align*}
+
+## expected value non-example
+
+Let $X$ have the following pmf (!):
+$$p(x) = \frac{6}{\pi^2x^2}, x \in \{1,2,3,\ldots\}$$
+
+$X$ does not have an expected value, because $\sum_x xp(x)$ does not converge.
+
+## expected value - continuous version
+
+If $X$ is continuous with density $f$, its expected value is:
+
+$$E(X) = \int\limits_{-\infty}^{\infty} xf(x)\,dx$$
+provided the integral converges (absolutely).
+
+\pause Bus stop example. What is the expected waiting time?
+
+
+
