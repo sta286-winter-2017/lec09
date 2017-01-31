@@ -73,7 +73,7 @@ The marginal density for $Y$ is $2e^{-2y}$ on $y > 0$.
 
 \pause $$e^{-x} \text{ on } x > 0$$
 
-\pause Heck, the conditional density for $X$ given $Y$ equals anything greater than 0 is still always $e^{-x}$ on $x > 0.$ 
+\pause Heck, the conditional density for $X$ given $Y$ equals *anything* greater than 0 is still always $e^{-x}$ on $x > 0.$ 
 
 \pause That's because $X$ and $Y$ have a special relationship\ldots to be revisited.
 
@@ -86,10 +86,10 @@ $$f(x,y) = \begin{cases}
 \end{cases}$$
 The marginal density for $X$ was found to be $\f{X}(x) = 2(1-x)$ for $0 < x < 1$.
 
-\pause The conditional density of $Y$ given $X=0.5$ will be 0 when $y$ is outside $(0, 0.5)$. Otherwise it will be:
-$$f(y|x=0.5) = \frac{2}{2\cdot (1-0.5)} = 2$$
+\pause The conditional density of $Y$ given $X=0.8$ will be 0 when $y$ is outside $(0, 0.2)$. Otherwise it will be:
+$$f(y|x=0.8) = \frac{2}{2\cdot (1-0.8)} = 5$$
 
-\pause Unlike marginal densities, conditional densities can sometimes be visualized. They are just "slices" of the joint density.
+\pause Unlike marginal densities, conditional densities can sometimes be visualized. They are just "slices" of the joint density (normalized to 1.)
 
 ## independence
 
